@@ -1,105 +1,116 @@
-using System;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
+
+[System.Serializable]
+public class LilyPadRoute
+{
+    public GameObject[] pads;
+}
+
+public enum DifficultyLevel
+{
+    Easy,
+    Medium,
+    Hard
+}
 
 public class LilyPadSpawner : MonoBehaviour
 {
+    [Header("Routes")]
+    [SerializeField] private LilyPadRoute[] allRoutes;
+    [SerializeField] private StartPad startPad;
 
-    public GameObject[] Route11;
-    public GameObject[] Route12;
-    public GameObject[] Route13;
-    private GameObject[] routeToSpawn;
-    public bool readyForRouteSpawn;
-    public bool isReturningToStart;
-    private bool difficultyCompleted = false;
+    [Header("Game Difficulty")]
+    public DifficultyLevel difficulty = DifficultyLevel.Easy;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private int currentRouteIndex = 0;
+    private int currentStepIndex = 0;
+
+    public float GetPadMaxStandTime()
     {
-        isReturningToStart = false;
-        readyForRouteSpawn = true;
-        routeToSpawn = Route11;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (readyForRouteSpawn == true)
+        return difficulty switch
         {
-            SpawnNextRoute();
-        }
-        
+            DifficultyLevel.Easy => 6f,
+            DifficultyLevel.Medium => 4f,
+            DifficultyLevel.Hard => 2.5f,
+            _ => 4f,
+        };
     }
+
+    private LilyPadRoute CurrentRoute => allRoutes[currentRouteIndex];
+    public LilyPadRoute[] AllRoutes => allRoutes;
 
     private void OnEnable()
     {
-        LilyPadBehavior.OnSteppedOn += OnLilyPadSteppedOn;
         StartPad.SteppedOnStart += OnStartPadSteppedOn;
+        LilyPadBehavior.OnBufferedStep += OnLilyPadBufferedStep;
+        LilyPadBehavior.OnPadFailure += OnPadFailure;
     }
 
-    public void SpawnNextRoute()
+    private void OnDisable()
     {
-        if (routeToSpawn != null)
-        { 
-        routeToSpawn[0].SetActive(true);
-        readyForRouteSpawn = false;
-        }
-        else if (!difficultyCompleted)
-        {
-            Debug.Log("Difficulty Completed");
-            difficultyCompleted = true;
-        }
-
+        StartPad.SteppedOnStart -= OnStartPadSteppedOn;
+        LilyPadBehavior.OnBufferedStep -= OnLilyPadBufferedStep;
+        LilyPadBehavior.OnPadFailure -= OnPadFailure;
     }
 
-    private void OnStartPadSteppedOn(StartPad startPad)
+    private void OnStartPadSteppedOn(StartPad pad)
     {
-        if (isReturningToStart)
+        if (currentRouteIndex >= allRoutes.Length)
         {
-            Debug.Log("Route Completed");
-            routeToSpawn[0].SetActive(false);
-            isReturningToStart = false;
+            Debug.Log("No more routes left.");
+            return;
+        }
 
-            // Assign the next route or set to null if Route13 was the last one
-            routeToSpawn = routeToSpawn == Route11 ? Route12
-                          : routeToSpawn == Route12 ? Route13
-                          : null;
+        Debug.Log($"Start Pad Stepped On — Starting Route {currentRouteIndex + 1}");
 
-            readyForRouteSpawn = true;
+        currentStepIndex = 0;
+
+        var padObj = CurrentRoute.pads[0];
+        padObj.SetActive(true);
+        padObj.GetComponent<LilyPadBehavior>().FloatUp();
+    }
+
+    private void OnLilyPadBufferedStep(LilyPadBehavior steppedPad)
+    {
+        if (steppedPad.stepIndex != currentStepIndex) return;
+
+        Debug.Log($"Lily pad {steppedPad.stepIndex} activated");
+
+        if (currentStepIndex == 0)
+        {
+            startPad.Hide();
         }
         else
         {
-            Debug.Log("Heading Out");
+            var previous = CurrentRoute.pads[currentStepIndex - 1];
+            previous.GetComponent<LilyPadBehavior>().SinkDown();
+        }
+
+        currentStepIndex++;
+
+        if (currentStepIndex < CurrentRoute.pads.Length)
+        {
+            var next = CurrentRoute.pads[currentStepIndex];
+            next.SetActive(true);
+            next.GetComponent<LilyPadBehavior>().FloatUp();
+        }
+        else
+        {
+            Debug.Log("Final pad reached — respawning Start Pad");
+
+            steppedPad.SinkDown();
+            startPad.Show();
+
+            currentRouteIndex++;
         }
     }
 
+    private void OnPadFailure(LilyPadBehavior pad)
+    {
+        Debug.Log($"Pad {pad.stepIndex} failed — player stood too long!");
 
-
-    private void OnLilyPadSteppedOn(LilyPadBehavior lilyPadBehavior)
-    {              
-            Debug.Log("LilyPad " + lilyPadBehavior.tag + " stepped on");
-
-            if (lilyPadBehavior.gameObject.CompareTag("1"))
-            {                        
-              routeToSpawn[1].SetActive(!isReturningToStart);            
-            }
-
-            else if (lilyPadBehavior.gameObject.CompareTag("2"))
-            {
-            routeToSpawn[2].SetActive(!isReturningToStart);
-            }
-            
-            else if (lilyPadBehavior.gameObject.CompareTag("3"))
-            {
-                Debug.Log("Returning to start");
-                isReturningToStart = true;
-            }
+        // Optional: restart route, show fail UI, etc.
+        // Example:
+        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
-
-
-
- 
-    
-
