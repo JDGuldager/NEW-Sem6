@@ -25,7 +25,7 @@ public class TrackerManager : MonoBehaviour
             leftFootObject.rotation = leftFootPose.transform.rotation;
 
             Vector3 leftFootRelative = headObject.InverseTransformPoint(leftFootObject.position);
-           // Debug.Log("Left Foot Relative Position: " + leftFootRelative);
+            Debug.Log("Left Foot Relative Position: " + leftFootRelative);
         }
 
         if (rightFootPose != null && rightFootObject != null)
@@ -34,7 +34,7 @@ public class TrackerManager : MonoBehaviour
             rightFootObject.rotation = rightFootPose.transform.rotation;
 
             Vector3 rightFootRelative = headObject.InverseTransformPoint(rightFootObject.position);
-          //  Debug.Log("Right Foot Relative Position: " + rightFootRelative);
+           Debug.Log("Right Foot Relative Position: " + rightFootRelative);
         }
     }
 }
