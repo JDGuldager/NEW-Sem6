@@ -6,63 +6,71 @@ using UnityEngine;
 public class LilyPadBehavior : MonoBehaviour
 {
     [Header("Step Logic")]
-    [Tooltip("How long both feet must be on the pad before it's considered 'stepped on'")]
+    [Tooltip("How long both feet must be on the pad before it's considered stepped on")]
     [SerializeField] private float bufferDuration = 1f;
 
     [Tooltip("Whether the pad can sink if player stands too long")]
     [SerializeField] private bool enableInstability = true;
 
     [Header("Visual Feedback")]
-    [Tooltip("Material to use when both feet are on the pad")]
+    [Tooltip("Material to apply when both feet are on the pad")]
     [SerializeField] private Material steppedOnMaterial;
     private Material originalMaterial;
 
     [Header("Float Animation")]
-    [Tooltip("Speed at which pad floats up/down")]
+    [Tooltip("Speed at which the pad floats up/down")]
     [SerializeField] private float floatSpeed = 1.0f;
 
     [Tooltip("Y height of the water surface")]
     [SerializeField] private float surfaceHeight = 0f;
 
-    [Header("Warning + Audio")]
+    [Header("Warning & Audio")]
     [Tooltip("Sound played when pad floats up")]
     [SerializeField] private AudioClip spawnSound;
 
     [Tooltip("Sound played when pad sinks")]
     [SerializeField] private AudioClip despawnSound;
 
-    [Tooltip("Duration of shake before failure sink")]
+    [Tooltip("Duration of shaking before sinking")]
     [SerializeField] private float warningDuration = 1f;
 
-    [Tooltip("Shake intensity before failure")]
+    [Tooltip("How intense the shake is before sinking")]
     [SerializeField] private float warningShakeIntensity = 0.1f;
+
+    [Header("Danger Color Settings")]
+    [Tooltip("Color when pad is safe")]
+    [SerializeField] private Color safeColor = Color.green;
+
+    [Tooltip("Color when pad is about to sink")]
+    [SerializeField] private Color dangerColor = Color.red;
+
+    [Tooltip("How fast the pad color lerps to danger color")]
+    [SerializeField] private float colorLerpSpeed = 3f;
 
     private AudioSource audioSource;
     private Coroutine bufferRoutine;
 
-    // Float/sink control
     private Vector3 startPos;
     private Vector3 targetPos;
     private float elapsedTime = 0f;
+
     private bool isFloatingUp = false;
     private bool isSinking = false;
     private bool isSinkingDueToTimeout = false;
 
-    // Foot detection
     private bool isLeftFootOn = false;
     private bool isRightFootOn = false;
     private bool playerOnPad = false;
     private float timeOnPad = 0f;
 
-    // Pad identity
     public int stepIndex;
 
-    // Events
     public static event Action<LilyPadBehavior> OnBufferedStep;
     public static event Action<LilyPadBehavior> OnPadFailure;
 
-    // Spawner ref to get difficulty
     private LilyPadSpawner spawner;
+    private MeshRenderer meshRenderer;
+    private Material padMaterial;
 
     private void Awake()
     {
@@ -72,21 +80,21 @@ public class LilyPadBehavior : MonoBehaviour
 
     private void Start()
     {
-        // Save the original material on startup
-        originalMaterial = GetComponent<MeshRenderer>().material;
+        meshRenderer = GetComponent<MeshRenderer>();
+        padMaterial = meshRenderer.material; // Instance for runtime color change
+        originalMaterial = padMaterial;
     }
 
     private void Update()
     {
-        // Floating up animation
+        // Animate floating up
         if (isFloatingUp)
         {
             elapsedTime += Time.deltaTime * floatSpeed;
             transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime);
             if (elapsedTime >= 1f) isFloatingUp = false;
         }
-
-        // Sinking animation
+        // Animate sinking
         else if (isSinking)
         {
             elapsedTime += Time.deltaTime * floatSpeed;
@@ -98,19 +106,25 @@ public class LilyPadBehavior : MonoBehaviour
             }
         }
 
-        // Time tracking for instability failure
+        // Handle color transition & danger timer
         if (enableInstability && playerOnPad && !isSinkingDueToTimeout && !isSinking)
         {
             timeOnPad += Time.deltaTime;
 
-            if (spawner != null && timeOnPad >= spawner.GetPadMaxStandTime())
+            float maxTime = spawner != null ? spawner.GetPadMaxStandTime() : 3f;
+            float dangerPercent = Mathf.Clamp01(timeOnPad / maxTime);
+
+            Color currentColor = Color.Lerp(safeColor, dangerColor, dangerPercent);
+            padMaterial.color = Color.Lerp(padMaterial.color, currentColor, Time.deltaTime * colorLerpSpeed);
+
+            if (timeOnPad >= maxTime)
             {
                 StartCoroutine(FailAndSink());
             }
         }
     }
 
-    //Triggers the lily pad to float up from below the surface
+    /// <summary>Triggers the lily pad to float up from below the surface</summary>
     public void FloatUp()
     {
         elapsedTime = 0f;
@@ -121,7 +135,7 @@ public class LilyPadBehavior : MonoBehaviour
         PlaySound(spawnSound);
     }
 
-    // Triggers the lily pad to sink below the surface
+    /// <summary>Triggers the lily pad to sink below the surface</summary>
     public void SinkDown()
     {
         elapsedTime = 0f;
@@ -155,7 +169,7 @@ public class LilyPadBehavior : MonoBehaviour
         CheckFeetStatus();
     }
 
-    // Checks if both feet are on, starts timer and changes material
+    /// <summary>Handles step detection and visual feedback</summary>
     private void CheckFeetStatus()
     {
         playerOnPad = isLeftFootOn && isRightFootOn;
@@ -164,13 +178,11 @@ public class LilyPadBehavior : MonoBehaviour
         {
             bufferRoutine = StartCoroutine(BufferStep());
 
-            // Change material to stepped-on
             if (steppedOnMaterial)
-                GetComponent<MeshRenderer>().material = steppedOnMaterial;
+                meshRenderer.material = steppedOnMaterial;
         }
         else if (!playerOnPad)
         {
-            // Reset buffer
             if (bufferRoutine != null)
             {
                 StopCoroutine(bufferRoutine);
@@ -179,27 +191,31 @@ public class LilyPadBehavior : MonoBehaviour
 
             timeOnPad = 0f;
 
-            // Restore material
+            // Restore material and reset color
             if (originalMaterial)
-                GetComponent<MeshRenderer>().material = originalMaterial;
+            {
+                meshRenderer.material = originalMaterial;
+                padMaterial = originalMaterial;
+            }
+
+            padMaterial.color = safeColor;
         }
     }
 
-    // Triggers after player stands on pad with both feet for 1 second
+    /// <summary>Buffer delay after both feet are detected</summary>
     private IEnumerator BufferStep()
     {
         yield return new WaitForSeconds(bufferDuration);
         OnBufferedStep?.Invoke(this);
     }
 
-    // Triggers when player overstays on pad (based on difficulty)
+    /// <summary>Warning effect + sink due to overstaying on the pad</summary>
     private IEnumerator FailAndSink()
     {
         isSinkingDueToTimeout = true;
-
         Debug.Log("WARNING: Lily pad unstable — about to sink!");
 
-        // Shake before sinking
+        // Shake warning
         Vector3 originalPos = transform.position;
         float elapsed = 0f;
 
