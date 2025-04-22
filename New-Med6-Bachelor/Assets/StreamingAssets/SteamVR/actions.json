@@ -51,7 +51,7 @@
     },
     {
       "name": "/actions/default/in/Left Foot",
-      "type": "boolean"
+      "type": "vector3"
     },
     {
       "name": "/actions/default/in/Right Foot",

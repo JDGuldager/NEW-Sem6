@@ -1,79 +1,237 @@
-using System;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class LilyPadBehavior : MonoBehaviour
 {
-    [SerializeField] private Material steppedOn;
-    private Material originalMaterial;
+    [Header("Step Logic")]
+    [Tooltip("How long both feet must be on the pad before it's considered stepped on")]
+    [SerializeField] private float bufferDuration = 1f;
 
-    public static event Action<LilyPadBehavior> OnSteppedOn;
+    [Tooltip("Whether the pad can sink if player stands too long")]
+    [SerializeField] private bool enableInstability = true;
+
+    [Header("Materials")]
+    [Tooltip("Material to apply when both feet are on the pad")]
+    [SerializeField] private Material steppedOnMaterial;
+
+    private Material originalMaterial;
+    private MeshRenderer meshRenderer;
+
+    [Header("Float Animation")]
+    [Tooltip("Speed at which the pad floats up/down")]
+    [SerializeField] private float floatSpeed = 1.0f;
+
+    [Tooltip("Y height of the water surface")]
+    [SerializeField] private float surfaceHeight = 0f;
+
+    [Header("Warning & Audio")]
+    [SerializeField] private AudioClip spawnSound;
+    [SerializeField] private AudioClip despawnSound;
+    [SerializeField] private float warningDuration = 1f;
+    [SerializeField] private float warningShakeIntensity = 0.1f;
+
+    [Header("Linked Obstacle")]
+    [Tooltip("Obstacle to activate when this lily pad is active")]
+    [SerializeField] private GameObject linkedObstacle;
+
+
+    private AudioSource audioSource;
+    private Coroutine bufferRoutine;
 
     private Vector3 startPos;
-    private Vector3 endPos;
-    private float lerpTime = 1f;
+    private Vector3 targetPos;
     private float elapsedTime = 0f;
+
+    private bool isFloatingUp = false;
+    private bool isSinking = false;
+    private bool isSinkingDueToTimeout = false;
 
     private bool isLeftFootOn = false;
     private bool isRightFootOn = false;
-    private bool hasSteppedOn = false;
+    private bool playerOnPad = false;
+    private float timeOnPad = 0f;
 
-    void Start()
+    public int stepIndex;
+
+    public static event Action<LilyPadBehavior> OnBufferedStep;
+    public static event Action<LilyPadBehavior> OnPadFailure;
+
+    private LilyPadSpawner spawner;
+
+    private void Awake()
     {
-        startPos = transform.position;
-        endPos = new Vector3(startPos.x, 0, startPos.z);
-        originalMaterial = GetComponent<MeshRenderer>().material;
+        audioSource = GetComponent<AudioSource>();
+        spawner = FindObjectOfType<LilyPadSpawner>();
     }
 
-    void Update()
+    private void Start()
     {
-        if (elapsedTime < lerpTime)
+        meshRenderer = GetComponent<MeshRenderer>();
+        originalMaterial = meshRenderer.material;
+
+        if (linkedObstacle == null)
         {
-            elapsedTime += Time.deltaTime;
-            float t = elapsedTime / lerpTime;
-            transform.position = Vector3.Lerp(startPos, endPos, t);
+            // Auto find the first inactive child named "Obstacle"
+            foreach (Transform child in transform)
+            {
+                if (!child.gameObject.activeSelf && child.name.ToLower().Contains("obstacle"))
+                {
+                    linkedObstacle = child.gameObject;
+                    break;
+                }
+            }
+        }
+    }
+
+
+    private void Update()
+    {
+        if (isFloatingUp)
+        {
+            elapsedTime += Time.deltaTime * floatSpeed;
+            transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime);
+            if (elapsedTime >= 1f) isFloatingUp = false;
+        }
+        else if (isSinking)
+        {
+            elapsedTime += Time.deltaTime * floatSpeed;
+            transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime);
+            if (elapsedTime >= 1f)
+            {
+                isSinking = false;
+                gameObject.SetActive(false);
+            }
+        }
+
+        if (enableInstability && playerOnPad && !isSinkingDueToTimeout && !isSinking)
+        {
+            timeOnPad += Time.deltaTime;
+
+            float maxTime = spawner != null ? spawner.GetPadMaxStandTime() : 3f;
+
+            if (timeOnPad >= maxTime)
+            {
+                StartCoroutine(FailAndSink());
+            }
+        }
+    }
+
+    public void FloatUp()
+    {
+        elapsedTime = 0f;
+        startPos = new Vector3(transform.position.x, surfaceHeight - 1.5f, transform.position.z);
+        targetPos = new Vector3(transform.position.x, surfaceHeight, transform.position.z);
+        transform.position = startPos;
+        isFloatingUp = true;
+        PlaySound(spawnSound);
+
+        meshRenderer.material = originalMaterial;
+
+        //  Activate linked obstacle if one is set
+        if (linkedObstacle != null)
+        {
+            linkedObstacle.SetActive(true);
+        }
+    }
+
+
+    public void SinkDown()
+    {
+        elapsedTime = 0f;
+        startPos = transform.position;
+        targetPos = new Vector3(transform.position.x, surfaceHeight - 1.5f, transform.position.z);
+        isSinking = true;
+        PlaySound(despawnSound);
+
+        if (linkedObstacle != null)
+        {
+            linkedObstacle.SetActive(false);
+        }
+    }
+
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource && clip)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("LeftFoot"))
-        {
-            isLeftFootOn = true;
-        }
-        else if (other.CompareTag("RightFoot"))
-        {
-            isRightFootOn = true;
-        }
-
+        if (other.CompareTag("LeftFoot")) isLeftFootOn = true;
+        if (other.CompareTag("RightFoot")) isRightFootOn = true;
         CheckFeetStatus();
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("LeftFoot"))
-        {
-            isLeftFootOn = false;
-        }
-        else if (other.CompareTag("RightFoot"))
-        {
-            isRightFootOn = false;
-        }
-
+        if (other.CompareTag("LeftFoot")) isLeftFootOn = false;
+        if (other.CompareTag("RightFoot")) isRightFootOn = false;
         CheckFeetStatus();
     }
 
     private void CheckFeetStatus()
     {
-        if (isLeftFootOn && isRightFootOn && !hasSteppedOn)
+        playerOnPad = isLeftFootOn && isRightFootOn;
+
+        if (playerOnPad && bufferRoutine == null)
         {
-            hasSteppedOn = true;
-            OnSteppedOn?.Invoke(this);
-            GetComponent<MeshRenderer>().material = steppedOn;
+            bufferRoutine = StartCoroutine(BufferStep());
+
+            // ✅ Change material when player is on pad
+            if (steppedOnMaterial)
+            {
+                meshRenderer.material = steppedOnMaterial;
+            }
         }
-        else if (!isLeftFootOn || !isRightFootOn)
+        else if (!playerOnPad)
         {
-            hasSteppedOn = false;
-            GetComponent<MeshRenderer>().material = originalMaterial;
+            if (bufferRoutine != null)
+            {
+                StopCoroutine(bufferRoutine);
+                bufferRoutine = null;
+            }
+
+            timeOnPad = 0f;
+
+            // ✅ Revert to original material
+            meshRenderer.material = originalMaterial;
         }
+    }
+
+    private IEnumerator BufferStep()
+    {
+        yield return new WaitForSeconds(bufferDuration);
+        OnBufferedStep?.Invoke(this);
+    }
+
+    private IEnumerator FailAndSink()
+    {
+        isSinkingDueToTimeout = true;
+
+        Debug.Log("WARNING: Lily pad unstable — about to sink!");
+
+        Vector3 originalPos = transform.position;
+        float elapsed = 0f;
+
+        while (elapsed < warningDuration)
+        {
+            float shakeX = UnityEngine.Random.Range(-warningShakeIntensity, warningShakeIntensity);
+            float shakeZ = UnityEngine.Random.Range(-warningShakeIntensity, warningShakeIntensity);
+            transform.position = originalPos + new Vector3(shakeX, 0, shakeZ);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        GameManager.Instance?.RegisterLilyPadTimeout();
+
+        transform.position = originalPos;
+        SinkDown();
+        OnPadFailure?.Invoke(this);
     }
 }

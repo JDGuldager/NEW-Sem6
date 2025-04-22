@@ -105,7 +105,7 @@ namespace Valve.VR
             }
         }
         
-        public virtual SteamVR_Action_Boolean Left_Foot
+        public virtual SteamVR_Action_Vector3 Left_Foot
         {
             get
             {
