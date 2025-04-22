@@ -55,20 +55,46 @@ public class LilyPadSpawner : MonoBehaviour
 
     private void OnStartPadSteppedOn(StartPad pad)
     {
-        if (currentRouteIndex >= allRoutes.Length)
+        // If player is returning from previous route
+        if (currentStepIndex >= CurrentRoute.pads.Length)
         {
-            Debug.Log("No more routes left.");
+            Debug.Log("Returned to start pad — ending route");
+
+            // Sink the final pad now
+            var finalPad = CurrentRoute.pads[CurrentRoute.pads.Length - 1];
+            finalPad.GetComponent<LilyPadBehavior>().SinkDown();
+
+            currentRouteIndex++;
+            currentStepIndex = 0;
+
+            // Spawn next route if available
+            if (currentRouteIndex < allRoutes.Length)
+            {
+                var padObj = CurrentRoute.pads[0];
+                padObj.SetActive(true);
+                padObj.GetComponent<LilyPadBehavior>().FloatUp();
+            }
+            else
+            {
+                Debug.Log("All routes completed!");
+            }
+
             return;
         }
 
-        Debug.Log($"Start Pad Stepped On — Starting Route {currentRouteIndex + 1}");
+        // First time stepping on start pad — start a route
+        if (currentRouteIndex < allRoutes.Length)
+        {
+            Debug.Log($"Start Pad Stepped On — Starting Route {currentRouteIndex + 1}");
 
-        currentStepIndex = 0;
+            currentStepIndex = 0;
 
-        var padObj = CurrentRoute.pads[0];
-        padObj.SetActive(true);
-        padObj.GetComponent<LilyPadBehavior>().FloatUp();
+            var padObj = CurrentRoute.pads[0];
+            padObj.SetActive(true);
+            padObj.GetComponent<LilyPadBehavior>().FloatUp();
+        }
     }
+
 
     private void OnLilyPadBufferedStep(LilyPadBehavior steppedPad)
     {
@@ -96,13 +122,12 @@ public class LilyPadSpawner : MonoBehaviour
         }
         else
         {
-            Debug.Log("Final pad reached — respawning Start Pad");
-
-            steppedPad.SinkDown();
+            Debug.Log("Final pad reached — return to start pad");
+            
             startPad.Show();
 
-            currentRouteIndex++;
         }
+
     }
 
     private void OnPadFailure(LilyPadBehavior pad)
