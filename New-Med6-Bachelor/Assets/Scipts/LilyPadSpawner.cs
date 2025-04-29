@@ -39,6 +39,9 @@ public class LilyPadSpawner : MonoBehaviour
     private LilyPadRoute CurrentRoute => allRoutes[currentRouteIndex];
     public LilyPadRoute[] AllRoutes => allRoutes;
 
+    public GameObject ghostFootL;
+    public GameObject ghostFootR;
+
     private void OnEnable()
     {
         StartPad.SteppedOnStart += OnStartPadSteppedOn;
@@ -92,6 +95,10 @@ public class LilyPadSpawner : MonoBehaviour
             var padObj = CurrentRoute.pads[0];
             padObj.SetActive(true);
             padObj.GetComponent<LilyPadBehavior>().FloatUp();
+
+            // Show ghost feet
+            ghostFootL.SetActive(true);
+            ghostFootR.SetActive(true);
         }
     }
 

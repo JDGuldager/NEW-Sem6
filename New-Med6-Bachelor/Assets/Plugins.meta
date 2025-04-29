@@ -1,8 +1,14 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:New-Med6-Bachelor/Assets/Plugins.meta
 guid: d873f16fb29f3ae4e82cf6201ee36d2a
 folderAsset: yes
 DefaultImporter:
+========
+guid: 7c27be43e32a6e0458ac22bf41824e69
+NativeFormatImporter:
+>>>>>>>> 8047200f4db71cda0f42303f9eef913f83d28b46:New-Med6-Bachelor/Assets/Animation/Ghost Feet.controller.meta
   externalObjects: {}
+  mainObjectFileID: 9100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 

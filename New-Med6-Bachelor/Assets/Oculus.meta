@@ -1,8 +1,14 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:New-Med6-Bachelor/Assets/Oculus.meta
 guid: 375a29e633a03334894875bcc647229a
 folderAsset: yes
 DefaultImporter:
+========
+guid: a1dcd18e01e534c558cbd23811a7ce9b
+NativeFormatImporter:
+>>>>>>>> 8047200f4db71cda0f42303f9eef913f83d28b46:New-Med6-Bachelor/Assets/Materials/GhostMat.mat.meta
   externalObjects: {}
+  mainObjectFileID: 2100000
   userData: 
   assetBundleName: 
   assetBundleVariant: 
