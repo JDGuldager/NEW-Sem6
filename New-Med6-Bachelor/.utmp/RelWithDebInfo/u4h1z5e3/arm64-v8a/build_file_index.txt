@@ -1,0 +1,2 @@
+C:\Users\gulda\Documents\GitHub\NEW-Sem6\New-Med6-Bachelor\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\CMakeLists.txt
+C:\Users\gulda\Documents\GitHub\NEW-Sem6\New-Med6-Bachelor\Library\Bee\Android\Prj\IL2CPP\Gradle\unityLibrary\src\main\cpp\GameActivity\CMakeLists.txt
