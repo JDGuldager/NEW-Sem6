@@ -6725,7 +6725,14 @@ MonoBehaviour:
     - {fileID: 483556361}
     - {fileID: 2079039757}
   startPad: {fileID: 1391627432}
+  difficultySelectorGroup: {fileID: 0}
+  tutorialRouteIndex: 0
+  easyRouteIndex: 1
+  mediumRouteIndex: 2
+  hardRouteIndex: 3
   difficulty: 1
+  currentRouteIndex: 0
+  currentStepIndex: 0
   ghostFeet: {fileID: 671090295}
 --- !u!114 &407500211
 MonoBehaviour:
@@ -9251,7 +9258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!95 &671090296
 Animator:
   serializedVersion: 7
@@ -22886,6 +22893,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e620ad1437145e2458f0eeaebf443c08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  LilyPadSpawnerScript: {fileID: 407500210}
+  speed: 1
 --- !u!65 &1672482497
 BoxCollider:
   m_ObjectHideFlags: 0

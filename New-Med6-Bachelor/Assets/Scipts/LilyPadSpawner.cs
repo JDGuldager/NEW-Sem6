@@ -31,8 +31,7 @@ public class LilyPadSpawner : MonoBehaviour
     public int currentRouteIndex = 0;
     public int currentStepIndex = 0;
 
-    public GameObject ghostFootL;
-    public GameObject ghostFootR;
+    public GameObject ghostFeet;
 
     public float GetPadMaxStandTime()
     {
@@ -95,8 +94,7 @@ public class LilyPadSpawner : MonoBehaviour
             padObj.SetActive(true);
             padObj.GetComponent<LilyPadBehavior>().FloatUp();
 
-            ghostFootL.SetActive(true);
-            ghostFootR.SetActive(true);
+            ghostFeet.SetActive(true);
         }
     }
 
