@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 53855e96ae1b7417ba8208453675f4a9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bbdabb5a76fc0984db11761a61037730, type: 2}
     - target: {fileID: 919132149155446097, guid: 53855e96ae1b7417ba8208453675f4a9, type: 3}
       propertyPath: m_Name
       value: lily_pad
@@ -104,7 +108,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bufferDuration: 1
   enableInstability: 1
-  steppedOnMaterial: {fileID: 2100000, guid: 325c58c46abb3264fb0630e4a73b8b2a, type: 2}
+  steppedOnMaterial: {fileID: 2100000, guid: f2562a65939ee4241a006abda6d7ba32, type: 2}
   floatSpeed: 1
   surfaceHeight: 0
   spawnSound: {fileID: 8300000, guid: d90762a3043d6154fbc11e2fea8b8b30, type: 3}

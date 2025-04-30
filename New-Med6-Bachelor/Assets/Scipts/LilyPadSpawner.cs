@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 [System.Serializable]
 public class LilyPadRoute
@@ -25,6 +26,8 @@ public class LilyPadSpawner : MonoBehaviour
     private int currentRouteIndex = 0;
     private int currentStepIndex = 0;
 
+    public FrogBehavior frogBehaviorScript;
+
     public float GetPadMaxStandTime()
     {
         return difficulty switch
@@ -39,8 +42,7 @@ public class LilyPadSpawner : MonoBehaviour
     private LilyPadRoute CurrentRoute => allRoutes[currentRouteIndex];
     public LilyPadRoute[] AllRoutes => allRoutes;
 
-    public GameObject ghostFootL;
-    public GameObject ghostFootR;
+    public GameObject ghostFeet;
 
     private void OnEnable()
     {
@@ -97,10 +99,11 @@ public class LilyPadSpawner : MonoBehaviour
             padObj.GetComponent<LilyPadBehavior>().FloatUp();
 
             // Show ghost feet
-            ghostFootL.SetActive(true);
-            ghostFootR.SetActive(true);
+            ghostFeet.SetActive(true);
+
         }
     }
+
 
 
     private void OnLilyPadBufferedStep(LilyPadBehavior steppedPad)
@@ -126,6 +129,7 @@ public class LilyPadSpawner : MonoBehaviour
             var next = CurrentRoute.pads[currentStepIndex];
             next.SetActive(true);
             next.GetComponent<LilyPadBehavior>().FloatUp();
+            frogBehaviorScript.LerpFrog();
         }
         else
         {

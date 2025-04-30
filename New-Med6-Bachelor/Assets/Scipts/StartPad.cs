@@ -14,8 +14,7 @@ public class StartPad : MonoBehaviour
     [SerializeField] private float bufferDuration = 1f;
     private Coroutine bufferRoutine;
 
-    public GameObject ghostFootL;
-    public GameObject ghostFootR;
+    public GameObject ghostFeet;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -43,8 +42,7 @@ public class StartPad : MonoBehaviour
         else if (!isLeftFootOn || !isRightFootOn)
         {
             hasSteppedOn = false;
-            ghostFootL.SetActive(false);
-            ghostFootR.SetActive(false);
+            ghostFeet.SetActive(false);
 
             if (bufferRoutine != null)
             {

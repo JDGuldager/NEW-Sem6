@@ -127,7 +127,7 @@ public class LilyPadBehavior : MonoBehaviour
         isFloatingUp = true;
         PlaySound(spawnSound);
 
-        meshRenderer.material = originalMaterial;
+        //meshRenderer.material = originalMaterial;
 
         //  Activate linked obstacle if one is set
         if (linkedObstacle != null)
