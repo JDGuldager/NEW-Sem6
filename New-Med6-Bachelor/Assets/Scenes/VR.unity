@@ -18911,15 +18911,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 671090295}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.54861665, z: 0, w: 0.8360741}
-  m_LocalPosition: {x: -0.45, y: 0.155, z: 0.41}
+  m_LocalRotation: {x: -0, y: -0.6185945, z: -0, w: 0.78571033}
+  m_LocalPosition: {x: -0.73, y: 0.155, z: 0.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1776816278}
   - {fileID: 765324084}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -76.427, z: 0}
 --- !u!1001 &675196104
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23974,6 +23974,7 @@ MonoBehaviour:
   currentRouteIndex: 0
   currentStepIndex: 0
   ghostFeet: {fileID: 671090295}
+  frogBehaviorscript: {fileID: 1672482496}
 --- !u!1 &848325577
 GameObject:
   m_ObjectHideFlags: 0
@@ -50927,7 +50928,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a9c62e41ab4727b3691f639f6f035, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.055
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a9c62e41ab4727b3691f639f6f035, type: 3}
       propertyPath: m_LocalPosition.y

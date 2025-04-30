@@ -33,6 +33,8 @@ public class LilyPadSpawner : MonoBehaviour
 
     public GameObject ghostFeet;
 
+    public FrogBehavior frogBehaviorscript;
+
     public float GetPadMaxStandTime()
     {
         return difficulty switch
@@ -148,6 +150,7 @@ public class LilyPadSpawner : MonoBehaviour
             var next = CurrentRoute.pads[currentStepIndex];
             next.SetActive(true);
             next.GetComponent<LilyPadBehavior>().FloatUp();
+            frogBehaviorscript.LerpFrog();
         }
         else
         {
