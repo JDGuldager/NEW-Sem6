@@ -30,7 +30,7 @@ public class LilyPadBehavior : MonoBehaviour
     [SerializeField] private AudioClip spawnSound;
     [SerializeField] private AudioClip despawnSound;
     [SerializeField] private float warningDuration = 1f;
-    [SerializeField] private float warningShakeIntensity = 0.1f;
+    [SerializeField] private float warningShakeIntensity = 0.05f;
 
     [Header("Linked Obstacle")]
     [Tooltip("Obstacle to activate when this lily pad is active")]
@@ -182,7 +182,7 @@ public class LilyPadBehavior : MonoBehaviour
         {
             bufferRoutine = StartCoroutine(BufferStep());
 
-            // ✅ Change material when player is on pad
+            //  Change material when player is on pad
             if (steppedOnMaterial)
             {
                 meshRenderer.material = steppedOnMaterial;
@@ -198,7 +198,7 @@ public class LilyPadBehavior : MonoBehaviour
 
             timeOnPad = 0f;
 
-            // ✅ Revert to original material
+            //  Revert to original material
             meshRenderer.material = originalMaterial;
         }
     }
