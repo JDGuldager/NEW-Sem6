@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using System;
 
 [System.Serializable]
 public class LilyPadRoute
@@ -7,7 +7,7 @@ public class LilyPadRoute
     public GameObject[] pads;
 }
 
-public enum DifficultyLevel
+public enum Difficulty
 {
     Easy,
     Medium,
@@ -19,30 +19,34 @@ public class LilyPadSpawner : MonoBehaviour
     [Header("Routes")]
     [SerializeField] private LilyPadRoute[] allRoutes;
     [SerializeField] private StartPad startPad;
+    [SerializeField] private GameObject difficultySelectorGroup;
+    [SerializeField] private int tutorialRouteIndex = 0;
+    [SerializeField] private int easyRouteIndex = 1;
+    [SerializeField] private int mediumRouteIndex = 2;
+    [SerializeField] private int hardRouteIndex = 3;
 
     [Header("Game Difficulty")]
-    public DifficultyLevel difficulty = DifficultyLevel.Easy;
+    public Difficulty difficulty = Difficulty.Easy;
 
-    private int currentRouteIndex = 0;
-    private int currentStepIndex = 0;
+    public int currentRouteIndex = 0;
+    public int currentStepIndex = 0;
 
-    public FrogBehavior frogBehaviorScript;
+    public GameObject ghostFootL;
+    public GameObject ghostFootR;
 
     public float GetPadMaxStandTime()
     {
         return difficulty switch
         {
-            DifficultyLevel.Easy => 6f,
-            DifficultyLevel.Medium => 4f,
-            DifficultyLevel.Hard => 2.5f,
+            Difficulty.Easy => 6f,
+            Difficulty.Medium => 4f,
+            Difficulty.Hard => 2.5f,
             _ => 4f,
         };
     }
 
-    private LilyPadRoute CurrentRoute => allRoutes[currentRouteIndex];
+    public LilyPadRoute CurrentRoute => allRoutes[currentRouteIndex];
     public LilyPadRoute[] AllRoutes => allRoutes;
-
-    public GameObject ghostFeet;
 
     private void OnEnable()
     {
@@ -60,57 +64,74 @@ public class LilyPadSpawner : MonoBehaviour
 
     private void OnStartPadSteppedOn(StartPad pad)
     {
-        // If player is returning from previous route
         if (currentStepIndex >= CurrentRoute.pads.Length)
         {
             Debug.Log("Returned to start pad — ending route");
 
-            // Sink the final pad now
             var finalPad = CurrentRoute.pads[CurrentRoute.pads.Length - 1];
             finalPad.GetComponent<LilyPadBehavior>().SinkDown();
 
             currentRouteIndex++;
             currentStepIndex = 0;
 
-            // Spawn next route if available
-            if (currentRouteIndex < allRoutes.Length)
+            if (currentRouteIndex == 1 && difficultySelectorGroup != null)
             {
-                var padObj = CurrentRoute.pads[0];
-                padObj.SetActive(true);
-                padObj.GetComponent<LilyPadBehavior>().FloatUp();
-            }
-            else
-            {
-                Debug.Log("All routes completed!");
+                difficultySelectorGroup.SetActive(true);
+                Debug.Log("Tutorial complete — showing difficulty selector pads.");
+                return;
             }
 
+            Debug.Log("Waiting for player to choose next difficulty.");
             return;
         }
 
-        // First time stepping on start pad — start a route
-        if (currentRouteIndex < allRoutes.Length)
+        // Auto-start only for tutorial
+        if (currentRouteIndex == tutorialRouteIndex)
         {
-            Debug.Log($"Start Pad Stepped On — Starting Route {currentRouteIndex + 1}");
+            Debug.Log($"Start Pad Stepped On — Starting Tutorial Route {currentRouteIndex + 1}");
 
             currentStepIndex = 0;
-
             var padObj = CurrentRoute.pads[0];
             padObj.SetActive(true);
             padObj.GetComponent<LilyPadBehavior>().FloatUp();
 
-            // Show ghost feet
-            ghostFeet.SetActive(true);
-
+            ghostFootL.SetActive(true);
+            ghostFootR.SetActive(true);
         }
     }
 
+    public void SelectDifficulty(Difficulty selected)
+    {
+        difficulty = selected;
 
+        switch (selected)
+        {
+            case Difficulty.Easy: currentRouteIndex = easyRouteIndex; break;
+            case Difficulty.Medium: currentRouteIndex = mediumRouteIndex; break;
+            case Difficulty.Hard: currentRouteIndex = hardRouteIndex; break;
+        }
+
+        currentStepIndex = 0;
+
+        var padObj = CurrentRoute.pads[0];
+        padObj.SetActive(true);
+        padObj.GetComponent<LilyPadBehavior>().FloatUp();
+
+        Debug.Log($"Difficulty selected: {selected}. Starting route {currentRouteIndex}.");
+    }
 
     private void OnLilyPadBufferedStep(LilyPadBehavior steppedPad)
     {
         if (steppedPad.stepIndex != currentStepIndex) return;
 
         Debug.Log($"Lily pad {steppedPad.stepIndex} activated");
+
+        // Hide selector pads if still showing
+        if (currentStepIndex == 0 && difficultySelectorGroup.activeSelf)
+        {
+            difficultySelectorGroup.SetActive(false);
+            Debug.Log("Selector pads hidden after stepping on first route pad.");
+        }
 
         if (currentStepIndex == 0)
         {
@@ -129,24 +150,17 @@ public class LilyPadSpawner : MonoBehaviour
             var next = CurrentRoute.pads[currentStepIndex];
             next.SetActive(true);
             next.GetComponent<LilyPadBehavior>().FloatUp();
-            frogBehaviorScript.LerpFrog();
         }
         else
         {
             Debug.Log("Final pad reached — return to start pad");
-            
             startPad.Show();
-
         }
-
     }
 
     private void OnPadFailure(LilyPadBehavior pad)
     {
         Debug.Log($"Pad {pad.stepIndex} failed — player stood too long!");
-
-        // Optional: restart route, show fail UI, etc.
-        // Example:
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // Optional: restart game, show fail UI, etc.
     }
 }
