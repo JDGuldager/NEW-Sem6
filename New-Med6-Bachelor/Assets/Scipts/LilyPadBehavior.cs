@@ -30,7 +30,7 @@ public class LilyPadBehavior : MonoBehaviour
     [SerializeField] private AudioClip spawnSound;
     [SerializeField] private AudioClip despawnSound;
     [SerializeField] private float warningDuration = 1f;
-    [SerializeField] private float warningShakeIntensity = 0.05f;
+    [SerializeField] private float warningShakeIntensity = 0.002f;
 
     [Header("Linked Obstacle")]
     [Tooltip("Obstacle to activate when this lily pad is active")]
@@ -218,20 +218,24 @@ public class LilyPadBehavior : MonoBehaviour
         Vector3 originalPos = transform.position;
         float elapsed = 0f;
 
+        float frequency = 10f; // how fast it oscillates
+        float intensity = warningShakeIntensity; // small, controlled amplitude
+
         while (elapsed < warningDuration)
         {
-            float shakeX = UnityEngine.Random.Range(-warningShakeIntensity, warningShakeIntensity);
-            float shakeZ = UnityEngine.Random.Range(-warningShakeIntensity, warningShakeIntensity);
-            transform.position = originalPos + new Vector3(shakeX, 0, shakeZ);
+            float offsetX = Mathf.Sin(elapsed * frequency) * intensity;
+            float offsetZ = Mathf.Cos(elapsed * frequency) * intensity;
+            transform.position = originalPos + new Vector3(offsetX, 0, offsetZ);
 
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        GameManager.Instance?.RegisterLilyPadTimeout();
+        SessionDataManager.Instance?.RegisterLilyPadTimeout();
 
         transform.position = originalPos;
         SinkDown();
         OnPadFailure?.Invoke(this);
     }
+
 }

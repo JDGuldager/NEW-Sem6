@@ -106,7 +106,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - Distance: 1.52
+    - Distance: 1.4
     - FoamAmount: 3.68
     - FoamCuttoff: 6
     - FoamScale: 50.02
@@ -146,7 +146,7 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     - reflectionStrength: 1.1
-    - waveamplitude: 0.005
+    - waveamplitude: 0.003
     m_Colors:
     - DeepColor: {r: 0.03938234, g: 0.44477442, b: 0.5566038, a: 0.5882353}
     - FoamColor: {r: 0.13333336, g: 0.2403354, b: 0.27450982, a: 1}

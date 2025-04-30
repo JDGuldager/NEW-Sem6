@@ -6,7 +6,8 @@ public class Obstacle : MonoBehaviour
     {
         if (other.CompareTag("LeftFoot") || other.CompareTag("RightFoot"))
         {
-            GameManager.Instance?.RegisterObstacleHit();
+            
+            SessionDataManager.Instance?.RegisterObstacleHit();
 
             // Optional: FX or sound here
             Destroy(gameObject);

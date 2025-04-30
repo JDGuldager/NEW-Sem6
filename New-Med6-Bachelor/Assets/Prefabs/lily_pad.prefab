@@ -110,7 +110,7 @@ MonoBehaviour:
   enableInstability: 1
   steppedOnMaterial: {fileID: 2100000, guid: f2562a65939ee4241a006abda6d7ba32, type: 2}
   floatSpeed: 1
-  surfaceHeight: 0
+  surfaceHeight: 0.05
   spawnSound: {fileID: 8300000, guid: d90762a3043d6154fbc11e2fea8b8b30, type: 3}
   despawnSound: {fileID: 8300000, guid: dffc4e6cdfe919d418d8a0f71d69a676, type: 3}
   warningDuration: 1

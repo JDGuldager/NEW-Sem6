@@ -32,7 +32,6 @@ public class LilyPadSpawner : MonoBehaviour
     public int currentStepIndex = 0;
 
     public GameObject ghostFeet;
-
     public FrogBehavior frogBehaviorscript;
 
     public float GetPadMaxStandTime()
@@ -89,6 +88,8 @@ public class LilyPadSpawner : MonoBehaviour
         // Auto-start only for tutorial
         if (currentRouteIndex == tutorialRouteIndex)
         {
+            SessionDataManager.Instance.SetIsTutorial(true); //  Set tutorial flag
+
             Debug.Log($"Start Pad Stepped On — Starting Tutorial Route {currentRouteIndex + 1}");
 
             currentStepIndex = 0;
@@ -103,6 +104,7 @@ public class LilyPadSpawner : MonoBehaviour
     public void SelectDifficulty(Difficulty selected)
     {
         difficulty = selected;
+        SessionDataManager.Instance.selectedDifficulty = selected;
 
         switch (selected)
         {
@@ -112,6 +114,8 @@ public class LilyPadSpawner : MonoBehaviour
         }
 
         currentStepIndex = 0;
+
+        SessionDataManager.Instance.SetIsTutorial(false); //  Disable tutorial mode on difficulty selection
 
         var padObj = CurrentRoute.pads[0];
         padObj.SetActive(true);
@@ -126,7 +130,6 @@ public class LilyPadSpawner : MonoBehaviour
 
         Debug.Log($"Lily pad {steppedPad.stepIndex} activated");
 
-        // Hide selector pads if still showing
         if (currentStepIndex == 0 && difficultySelectorGroup.activeSelf)
         {
             difficultySelectorGroup.SetActive(false);
@@ -135,7 +138,13 @@ public class LilyPadSpawner : MonoBehaviour
 
         if (currentStepIndex == 0)
         {
+            SessionDataManager.Instance.BeginSession(); //  Start session when non-tutorial route begins
             startPad.Hide();
+            if (SessionDataManager.Instance.selectedDifficultyPad != null)
+            {
+                SessionDataManager.Instance.selectedDifficultyPad.SetActive(false);
+                SessionDataManager.Instance.selectedDifficultyPad = null;
+            }
         }
         else
         {
@@ -157,11 +166,15 @@ public class LilyPadSpawner : MonoBehaviour
             Debug.Log("Final pad reached — return to start pad");
             startPad.Show();
         }
+
+        if (currentStepIndex == CurrentRoute.pads.Length)
+        {
+            SessionDataManager.Instance.EndSession(); //  End session when reaching final pad
+        }
     }
 
     private void OnPadFailure(LilyPadBehavior pad)
     {
         Debug.Log($"Pad {pad.stepIndex} failed — player stood too long!");
-        // Optional: restart game, show fail UI, etc.
     }
 }

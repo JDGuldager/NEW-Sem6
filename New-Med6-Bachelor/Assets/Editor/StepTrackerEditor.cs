@@ -3,14 +3,14 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(DataSaver))]
+[CustomEditor(typeof(SessionDataManager))]
 public class StepTrackerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        DataSaver tracker = (DataSaver)target;
+        SessionDataManager tracker = (SessionDataManager)target;
 
         GUILayout.Space(10);
 

@@ -135,6 +135,8 @@ public class DifficultySelectorPad : MonoBehaviour
 
         if (spawner != null)
             spawner.SelectDifficulty(difficulty);
+            SessionDataManager.Instance.selectedDifficultyPad = this.gameObject;
+
 
         // Hide the StartPad after selection buffer completes
         if (startPadToHide != null)
@@ -150,7 +152,7 @@ public class DifficultySelectorPad : MonoBehaviour
                 pad.gameObject.SetActive(false);
         }
 
-        gameObject.SetActive(false);
+       // gameObject.SetActive(false);
     }
 
 
