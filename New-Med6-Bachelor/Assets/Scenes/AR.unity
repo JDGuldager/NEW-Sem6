@@ -7016,6 +7016,8 @@ MonoBehaviour:
   mediumRouteIndex: 2
   hardRouteIndex: 3
   difficulty: 1
+  currentRouteIndex: 0
+  currentStepIndex: 0
   ghostFootL: {fileID: 0}
   ghostFootR: {fileID: 0}
 --- !u!114 &407500212
@@ -22240,8 +22242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bufferDuration: 1
-  ghostFootL: {fileID: 0}
-  ghostFootR: {fileID: 0}
+  ghostFeet: {fileID: 0}
 --- !u!65 &1391627433
 BoxCollider:
   m_ObjectHideFlags: 0
