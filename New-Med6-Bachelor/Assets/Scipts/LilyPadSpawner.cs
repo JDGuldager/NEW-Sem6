@@ -159,7 +159,7 @@ public class LilyPadSpawner : MonoBehaviour
             var next = CurrentRoute.pads[currentStepIndex];
             next.SetActive(true);
             next.GetComponent<LilyPadBehavior>().FloatUp();
-            frogBehaviorscript.LerpFrog();
+            
         }
         else
         {

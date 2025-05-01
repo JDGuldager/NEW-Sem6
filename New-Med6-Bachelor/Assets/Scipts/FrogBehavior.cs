@@ -1,9 +1,13 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class FrogBehavior : MonoBehaviour
 {
     public LilyPadSpawner LilyPadSpawnerScript;
+
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip croakSound;
 
     public AnimationCurve curve;
     private Vector3 startPos;
@@ -24,6 +28,8 @@ public class FrogBehavior : MonoBehaviour
     public GameObject nextPad;
     public Vector3 nextPadPos;
     public Vector3 spawnPos;
+
+    public Animator frogAnimator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -54,7 +60,7 @@ public class FrogBehavior : MonoBehaviour
         }
 
         // Check if the target lily pad is valid
-        if (nextPadPos.y >= 0f)
+        if (nextPadPos.y >= -0.5f)
         {
             if (shouldJump)
             {
@@ -68,6 +74,7 @@ public class FrogBehavior : MonoBehaviour
                     shouldJump = false;
                     current = 0f; // Reset the interpolation progress
                     transform.position = targetPos;
+                    transform.rotation = DirectionToLook(startPos, targetPos);
                 }
             }
 
@@ -82,14 +89,16 @@ public class FrogBehavior : MonoBehaviour
                 current = target; // Ensure it doesn't overshoot
                 shouldJump = true; // Allow the next jump
                 transform.position = targetPos; 
-
+                frogAnimator.SetBool("InTheAir", false); 
             }
         }
+        
         
     }
 
     public void LerpFrog()
     {
+        frogAnimator.SetBool("InTheAir", true);
         // Smoothly interpolate the frog's position using the animation curve
         Vector3 interpolatedPosition = Vector3.Lerp(startPos, targetPos, current);
 
@@ -100,7 +109,7 @@ public class FrogBehavior : MonoBehaviour
         // Apply the interpolated position to the frog
         transform.position = interpolatedPosition;
 
-        transform.rotation = DirectionToLook(startPos, targetPos);
+        
     }
 
     private bool PositionsAreClose(Vector3 pos1, Vector3 pos2)
@@ -114,5 +123,14 @@ public class FrogBehavior : MonoBehaviour
         direction.y = 0;
         return Quaternion.LookRotation(direction, Vector3.up);
 
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource && clip)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+        Debug.Log("soundPLayed");
     }
 }
