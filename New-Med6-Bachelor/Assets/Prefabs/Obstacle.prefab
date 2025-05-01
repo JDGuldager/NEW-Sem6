@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2077841470105930386}
   - component: {fileID: 8081428302880838572}
   - component: {fileID: 6100280777345213654}
-  - component: {fileID: 1414360488751017461}
   - component: {fileID: 7208616625657370211}
   - component: {fileID: 6626841060446830555}
+  - component: {fileID: 7920664878521538195}
   m_Layer: 0
   m_Name: Obstacle
   m_TagString: Untagged
@@ -30,9 +30,9 @@ Transform:
   m_GameObject: {fileID: 2162134459940195772}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5680848, y: -0.42104596, z: 0.42104596, w: 0.5680848}
-  m_LocalPosition: {x: 1.248, y: 0, z: 0.359}
-  m_LocalScale: {x: 0.35, y: 0.55, z: 0.35}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 1.4099, y: 0.0066, z: 0.4073}
+  m_LocalScale: {x: 0.043254517, y: 0.5022187, z: 0.2434515}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 73.089}
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2f048cd9b019ddb43b7a624ceefb84d0, type: 2}
+  - {fileID: 2100000, guid: 6181de342da958c48a7a6b45789cb4d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -89,29 +89,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &1414360488751017461
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2162134459940195772}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &7208616625657370211
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -151,3 +128,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 645cda0a97eefd9469dd4a85b5d4ed3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &7920664878521538195
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2162134459940195772}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.35, y: 2, z: 0.66}
+  m_Center: {x: 0, y: 0, z: 0}
