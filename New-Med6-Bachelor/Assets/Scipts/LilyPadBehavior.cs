@@ -218,7 +218,7 @@ public class LilyPadBehavior : MonoBehaviour
         Vector3 originalPos = transform.position;
         float elapsed = 0f;
 
-        float frequency = 3f; // how fast it oscillates
+        float frequency = 5f; // how fast it oscillates
         float intensity = warningShakeIntensity; // small, controlled amplitude
 
         while (elapsed < warningDuration)
