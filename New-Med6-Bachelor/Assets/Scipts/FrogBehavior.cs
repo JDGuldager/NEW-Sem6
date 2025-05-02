@@ -1,4 +1,3 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -34,7 +33,7 @@ public class FrogBehavior : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        spawnPos = transform.position;
+        // spawnPos = transform.position;
 
         if (LilyPadSpawnerScript == null)
         {
@@ -55,7 +54,7 @@ public class FrogBehavior : MonoBehaviour
         else
         {
             nextPad = startPad;
-            nextPadPos = spawnPos;
+            nextPadPos = startPad.transform.position;
             yOffset = 0.05f;           
         }
 

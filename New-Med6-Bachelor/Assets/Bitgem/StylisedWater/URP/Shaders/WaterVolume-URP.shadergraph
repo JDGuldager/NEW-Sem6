@@ -4185,7 +4185,7 @@
     "m_ObjectId": "0cc4d9d3445747bf8234d1a2e898b2ad",
     "m_Title": "Opacity",
     "m_Position": {
-        "x": -3103.99951171875,
+        "x": -3104.0,
         "y": -467.0
     }
 }
@@ -6481,8 +6481,8 @@
     "m_ObjectId": "27df250afb694daa8d985d22ce958501",
     "m_Title": "Screen Colour (with refraction)",
     "m_Position": {
-        "x": -3555.99951171875,
-        "y": -1116.9998779296875
+        "x": -3556.0,
+        "y": -1117.0
     }
 }
 
@@ -8136,8 +8136,8 @@
     "m_ObjectId": "423d006183ec41699d0fc59bff68d16d",
     "m_Title": "Vertex Waves",
     "m_Position": {
-        "x": -1793.999755859375,
-        "y": -1689.9998779296875
+        "x": -1794.0,
+        "y": -1690.0
     }
 }
 
@@ -11960,7 +11960,7 @@
     "m_ObjectId": "73883614d0a94cefa67c1cdf1a063690",
     "m_Title": "Flatten Normals (Foam)",
     "m_Position": {
-        "x": -297.99951171875,
+        "x": -298.0,
         "y": 659.0
     }
 }
@@ -15391,8 +15391,8 @@
     "m_ObjectId": "a18763ceb5fc4890b2ff1ae3f896f241",
     "m_Title": "Foam",
     "m_Position": {
-        "x": -2434.99951171875,
-        "y": 103.99993896484375
+        "x": -2435.0,
+        "y": 104.0
     }
 }
 
@@ -17602,7 +17602,7 @@
     "m_ObjectId": "bcf39ea6a45f459c9f350f187e7f94d7",
     "m_Title": "UVs (Scaling / Overlap / Scrolling)",
     "m_Position": {
-        "x": -6597.99951171875,
+        "x": -6598.0,
         "y": 195.0
     }
 }
@@ -20342,8 +20342,8 @@
     "m_ObjectId": "d9105c45341649f1b4237620fb100280",
     "m_Title": "Surface Normals",
     "m_Position": {
-        "x": -4904.99951171875,
-        "y": -33.00006866455078
+        "x": -4905.0,
+        "y": -33.0
     }
 }
 
@@ -21896,8 +21896,8 @@
     "m_ObjectId": "ea24f45d207b478582f53947ce651cf0",
     "m_Title": "Final Color (Water vs Foam)",
     "m_Position": {
-        "x": -1185.9993896484375,
-        "y": 108.99993896484375
+        "x": -1186.0,
+        "y": 109.0
     }
 }
 
